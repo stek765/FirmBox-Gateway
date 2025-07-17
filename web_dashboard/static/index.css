@@ -1,0 +1,128 @@
+body {
+    font-family: monospace;
+    background-color: #111;
+    color: #0f0;
+    margin: 0;
+    padding: 2em;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    position: relative;
+}
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.controls {
+    margin-bottom: 2em;
+}
+.controls button {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 0.5em 1.2em;
+    margin-right: 1em;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.controls button:hover {
+    background: #333;
+}
+.log-panel {
+    width: 490px;
+    background: #222;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px #000a;
+    padding: 1em;
+    height: 27em;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+h1 { color: #fff; margin-top: 0; }
+pre {
+    margin: 0;
+    font-size: 1.1em;
+    color: #0f0;
+    white-space: pre-wrap;
+}
+.log-title {
+    color: #fff;
+    margin: 0 0 0.5em 0;
+    font-size: 1.3em;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-align: left;
+}
+.log-section {
+    margin-left: 6em;
+    margin-top: 16vh;
+    width: 568px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+.log-link {
+    display: block;
+    margin: 1.5em auto 0 auto;
+    width: fit-content;
+    background: linear-gradient(90deg, #222 60%, #333 100%);
+    color: #fff;
+    background: linear-gradient(to right, #2d4f3b, #1a1f1b);
+    border: 1px solid #4be183;
+    color: #e3ffe6;
+    /* border: 1.5px solid #39f; */
+    border-radius: 8px;
+    padding: 0.7em 1.7em;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 2px 12px #0006;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, color 0.2s, border 0.2s, transform 0.1s;
+    text-align: center;
+}
+.log-link:hover {
+    background: rgb(60, 110, 80);
+    color: #e9ffe9;
+    border-color: #8affc1;
+    transform: scale(1.04);
+    cursor: pointer;
+}
+.footer-social {
+    color: white;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5em;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 1.2em 0 0.7em 0;
+    background: transparent;
+    z-index: 20;
+}
+.action-console {
+    background: #181818;
+    color: #4be183;
+    font-family: monospace;
+    font-size: 1em;
+    border-radius: 8px;
+    margin-top: 1.5em;
+    padding: 1em 1.5em;
+    min-height: 2.5em;
+    max-height: 10em;
+    overflow-y: auto;
+    box-shadow: 0 2px 12px #0006;
+    border: 1px solid #333;
+}
+.action-console span {
+    display: block;
+    margin-bottom: 0.6em; 
+    line-height: 1.4;
+}

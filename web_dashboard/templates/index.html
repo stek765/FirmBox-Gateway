@@ -3,196 +3,8 @@
 <head>
     <title>Log Dashboard</title>
     <meta charset="utf-8">
-    <style>
-        body {
-            font-family: monospace;
-            background-color: #111;
-            color: #0f0;
-            margin: 0;
-            padding: 2em;
-            display: flex;
-            flex-direction: row;
-            height: 100vh;
-            position: relative;
-        }
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-        .controls {
-            margin-bottom: 2em;
-        }
-        .controls button {
-            background: #222;
-            color: #fff;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 0.5em 1.2em;
-            margin-right: 1em;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .controls button:hover {
-            background: #333;
-        }
-        .log-panel {
-            width: 490px;
-            background: #222;
-            border-radius: 12px;
-            box-shadow: 0 2px 16px #000a;
-            padding: 1em;
-            height: 27em;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        h1 { color: #fff; margin-top: 0; }
-        pre {
-            margin: 0;
-            font-size: 1.1em;
-            color: #0f0;
-            white-space: pre-wrap;
-        }
-        .log-title {
-            color: #fff;
-            margin: 0 0 0.5em 0;
-            font-size: 1.3em;
-            font-weight: 400;
-            letter-spacing: 1px;
-            text-align: left;
-        }
-        .log-section {
-            margin-left: 6em;
-            margin-top: 16vh;
-            width: 568px;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-        }
-        .log-link {
-            display: block;
-            margin: 1.5em auto 0 auto;
-            width: fit-content;
-            background: linear-gradient(90deg, #222 60%, #333 100%);
-            color: #fff;
-            background: linear-gradient(to right, #2d4f3b, #1a1f1b);
-            border: 1px solid #4be183;
-            color: #e3ffe6;
-            /* border: 1.5px solid #39f; */
-            border-radius: 8px;
-            padding: 0.7em 1.7em;
-            font-size: 1.1em;
-            font-weight: bold;
-            text-decoration: none;
-            box-shadow: 0 2px 12px #0006;
-            letter-spacing: 0.5px;
-            transition: background 0.2s, color 0.2s, border 0.2s, transform 0.1s;
-            text-align: center;
-        }
-        .log-link:hover {
-            background: rgb(60, 110, 80);
-            color: #e9ffe9;
-            border-color: #8affc1;
-            transform: scale(1.04);
-            cursor: pointer;
-        }
-        .footer-social {
-            color: white;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2.5em;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            padding: 1.2em 0 0.7em 0;
-            background: transparent;
-            z-index: 20;
-        }
-        .action-console {
-            background: #181818;
-            color: #4be183;
-            font-family: monospace;
-            font-size: 1em;
-            border-radius: 8px;
-            margin-top: 1.5em;
-            padding: 1em 1.5em;
-            min-height: 2.5em;
-            max-height: 10em;
-            overflow-y: auto;
-            box-shadow: 0 2px 12px #0006;
-            border: 1px solid #333;
-        }
-        .action-console span {
-            display: block;
-            margin-bottom: 0.6em; /* aumenta lo spazio tra le righe */
-            line-height: 1.4;
-        }
-    </style>
-    <script>
-        function fetchLogs() {
-            fetch('/api/logs')
-                .then(response => response.json())
-                .then(data => {
-                    const logsEl = document.getElementById('logs');
-                    if (data.length === 0) {
-                        logsEl.textContent = "Caricamento log...";
-                    } else {
-                        logsEl.textContent = data.join('\n');
-                        logsEl.scrollTop = logsEl.scrollHeight;
-                    }
-                })
-                .catch(() => {
-                    const logsEl = document.getElementById('logs');
-                    logsEl.textContent = "Errore caricamento log.";
-                });
-        }
-        setInterval(fetchLogs, 1000);
-        window.onload = fetchLogs;
-
-        function sendCommand(cmd) {
-            const consoleBox = document.getElementById('action-console');
-            // Se ci sono già comandi, aggiungi la barra separatrice
-            if (consoleBox.children.length > 0) {
-                addConsoleLine('------', true);
-            }
-            const msg = `> Inviato comando: ${cmd}`;
-            addConsoleLine(msg);
-
-            fetch('/command', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({command: cmd})
-            })
-            .then(res => res.json())
-            .then(data => {
-                addConsoleLine(`✔ ${data.status || 'Comando inviato!'}`);
-            })
-            .catch(() => {
-                addConsoleLine('✖ Errore invio comando');
-            });
-        }
-
-        function addConsoleLine(text, isSeparator = false) {
-            const consoleBox = document.getElementById('action-console');
-            const line = document.createElement('span');
-            line.textContent = text;
-            if (isSeparator) {
-                line.style.margin = '0.7em 0 0.7em 0';
-            }
-            consoleBox.appendChild(line);
-            // Scroll automatico in basso
-            consoleBox.scrollTop = consoleBox.scrollHeight;
-            // Limita a 10 righe
-            while (consoleBox.children.length > 10) {
-                consoleBox.removeChild(consoleBox.firstChild);
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
     <div class="main-content">
@@ -215,13 +27,13 @@
     </div>
     <div id="action-anim"></div>
     <footer class="footer-social">
-        <a href="https://github.com/tuo-username" target="_blank" title="GitHub" style="color: white;">
+        <a href="https://github.com/stek765" target="_blank" title="GitHub" style="color: white;">
             <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.11-.75.41-1.27.74-1.56-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 2.92-.39c.99 0 1.99.13 2.92.39 2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.41-5.27 5.7.42.36.79 1.09.79 2.2 0 1.59-.01 2.87-.01 3.26 0 .31.21.68.8.56C20.71 21.39 24 17.08 24 12c0-6.27-5.23-11.5-12-11.5z"/></svg>
         </a>
-        <a href="https://www.linkedin.com/in/tuo-username" target="_blank" title="LinkedIn" style="color: white;">
+        <a href="https://www.linkedin.com/in/stefano-zanolli-76616b206/" target="_blank" title="LinkedIn" style="color: white;">
             <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-9h3v9zm-1.5-10.28c-.97 0-1.75-.79-1.75-1.75s.78-1.75 1.75-1.75 1.75.79 1.75 1.75-.78 1.75-1.75 1.75zm13.5 10.28h-3v-4.5c0-1.08-.02-2.47-1.5-2.47-1.5 0-1.73 1.17-1.73 2.39v4.58h-3v-9h2.88v1.23h.04c.4-.75 1.38-1.54 2.84-1.54 3.04 0 3.6 2 3.6 4.59v5.72z"/></svg>
         </a>
-        <a href="https://www.instagram.com/tuo-username" target="_blank" title="Instagram" style="color: white;">
+        <a href="https://www.instagram.com/stek.77/" target="_blank" title="Instagram" style="color: white;">
             <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.584.012 4.85.07 1.17.056 1.97.24 2.43.41.59.22 1.01.48 1.45.92.44.44.7.86.92 1.45.17.46.354 1.26.41 2.43.058 1.266.07 1.65.07 4.85s-.012 3.584-.07 4.85c-.056 1.17-.24 1.97-.41 2.43-.22.59-.48 1.01-.92 1.45-.44.44-.7-.86-.92-1.45-.17-.46-.354-1.26-.41-2.43C2.212 15.784 2.2 15.4 2.2 12s.012-3.584.07-4.85c.056-1.17.24-1.97.41-2.43.22-.59.48-1.01.92-1.45.44-.44.86-.7 1.45-.92.46-.17 1.26-.354 2.43-.41-1.266.058-1.65.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.056-1.97-.24-2.43-.41-.59-.22-1.01-.48-1.45-.92-.44-.44-.7-.86-.92-1.45-.17-.46-.354-1.26-.41-2.43C8.416 2.212 8.8 2.2 12 2.2zm0-2.2C8.736 0 8.332.012 7.052.07c-1.28.058-2.16.24-2.91.51-.8.29-1.48.68-2.15 1.35-.67.67-1.06 1.35-1.35 2.15-.27.75-.452 1.63-.51 2.91C.012 8.332 0 8.736 0 12c0 3.264.012 3.668.07 4.948.058 1.28.24 2.16.51 2.91.29.8.68 1.48 1.35 2.15.67.67 1.35 1.06 2.15 1.35.75.27 1.63.452 2.91.51C8.332 23.988 8.736 24 12 24s3.668-.012 4.948-.07c1.28-.058 2.16-.24 2.91-.51.8-.29 1.48-.68 2.15-1.35.67-.67 1.06-1.35 1.35-2.15.27-.75.452-1.63.51-2.91.058-1.28.07-1.684.07-4.948 0-3.264-.012-3.668-.07-4.948-.058-1.28-.24-2.16-.51-2.91-.29-.8-.68-1.48-1.35-2.15-.67-.67-1.35-1.06-2.15-1.35-.75-.27-1.63-.452-2.91-.51C15.668.012 15.264 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm7.844-10.406a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
         </a>
         <span class="email">📧 stefanozanolli765@gmail.com</span>

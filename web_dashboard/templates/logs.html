@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
+    
+<!-- Head -->
 <head>
     <title>Log dati sensore</title>
     <meta charset="utf-8">
+
+    <!-- CSS -->
     <style>
         body {
             font-family: monospace;
@@ -52,7 +56,10 @@
         .temp { color: #ffb300; }
         .hum { color: #00e6e6; }
     </style>
+
+    <!-- JavaScript -->
     <script>
+        // funzione per parsare le linee del log
         function parseLogLine(line) {
             // Esempio: [2025-07-15 16:19:16] temperature=22.68C humidity=66.35%
             const match = line.match(/^\[([^\]]+)\]\s+temperature=([0-9.]+C)\s+humidity=([0-9.]+%)/);
@@ -65,6 +72,8 @@
             }
             return null;
         }
+
+        // funzione per caricare i log ogni secondo
         function fetchLogs() {
             fetch('/api/logs')
                 .then(response => response.json())
@@ -85,10 +94,15 @@
                     });
                 });
         }
+        
         setInterval(fetchLogs, 1000);
         window.onload = fetchLogs;
+
     </script>
+
 </head>
+
+<!-- Body -->
 <body>
     <h1>Log dati sensore</h1>
     <div class="log-panel">
@@ -106,4 +120,5 @@
         </table>
     </div>
 </body>
+
 </html>
