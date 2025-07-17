@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log dati sensore</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #111;
+            color: #0f0;
+            margin: 0;
+            padding: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 1.5em;
+        }
+        .log-panel {
+            width: 700px;
+            background: #222;
+            border-radius: 12px;
+            box-shadow: 0 2px 16px #000a;
+            padding: 1.5em 2em;
+            margin-bottom: 2em;
+        }
+        #log-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #0f0;
+            background: #222;
+            font-size: 1.05em;
+        }
+        #log-table th, #log-table td {
+            border-bottom: 1px solid #333;
+            padding: 0.3em 0.7em;
+            text-align: left;
+        }
+        #log-table th {
+            color: #fff;
+            background: #222;
+            font-weight: bold;
+        }
+        #log-table tr:nth-child(even) {
+            background: #252525;
+        }
+        .timestamp { color: #39f; }
+        .temp { color: #ffb300; }
+        .hum { color: #00e6e6; }
+    </style>
+    <script>
+        function parseLogLine(line) {
+            // Esempio: [2025-07-15 16:19:16] temperature=22.68C humidity=66.35%
+            const match = line.match(/^\[([^\]]+)\]\s+temperature=([0-9.]+C)\s+humidity=([0-9.]+%)/);
+            if (match) {
+                return {
+                    timestamp: match[1],
+                    temp: match[2],
+                    hum: match[3]
+                };
+            }
+            return null;
+        }
+        function fetchLogs() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(data => {
+                    const logBody = document.getElementById('log-body');
+                    logBody.innerHTML = '';
+                    data.forEach(line => {
+                        const parsed = parseLogLine(line);
+                        if (parsed) {
+                            logBody.innerHTML += `<tr>
+                                <td class="timestamp">[${parsed.timestamp}]</td>
+                                <td class="temp">${parsed.temp}</td>
+                                <td class="hum">${parsed.hum}</td>
+                            </tr>`;
+                        } else {
+                            logBody.innerHTML += `<tr><td colspan="3">${line}</td></tr>`;
+                        }
+                    });
+                });
+        }
+        setInterval(fetchLogs, 1000);
+        window.onload = fetchLogs;
+    </script>
+</head>
+<body>
+    <h1>Log dati sensore</h1>
+    <div class="log-panel">
+        <table id="log-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Temperatura</th>
+                    <th>Umidità</th>
+                </tr>
+            </thead>
+            <tbody id="log-body">
+                <tr><td colspan="3">Caricamento log...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
