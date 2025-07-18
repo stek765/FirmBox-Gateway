@@ -1,11 +1,11 @@
 # command_subscriber.py:
-# riceve i comandi che il browser invia al broker mqtt ed esegue le azioni richieste
+# riceve i comandi che il browser invia al broker mqtt, ed esegue le azioni richieste passandole per seriale alla STM32
 # (raspberry pi -> UART -> STM32)
 
 import serial
 import paho.mqtt.client as mqtt
 
-BROKER = "localhost"
+BROKER = "localhost"   # si collega al broker mqtt (topic: firmbox/commands) a cui il pc invia i comandi
 PORT = 1883
 BAUD = 9600
 

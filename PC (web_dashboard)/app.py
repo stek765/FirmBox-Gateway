@@ -54,7 +54,7 @@ def command():
         return {"status": "Nessun comando ricevuto"}, 400
     try:
         import paho.mqtt.publish as publish
-        publish.single("firmbox/commands", cmd, hostname="192.168.5.122")
+        publish.single("firmbox/commands", cmd, hostname="192.168.5.122") # si collega al broker mqtt (topic: firmbox/commands) 
         return {"status": f"Comando '{cmd}' inviato"}
     except Exception as e:
         return {"status": f"Errore invio comando: {e}"}, 500
