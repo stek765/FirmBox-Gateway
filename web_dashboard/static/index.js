@@ -3,6 +3,7 @@ function fetchLogs() {
     fetch('/api/logs')
         .then(response => response.json())
         .then(data => {
+            console.log("Dati ricevuti da /api/logs:", data); // <--- AGGIUNGI QUESTO
             const logsEl = document.getElementById('logs');
             if (data.length === 0) {
                 logsEl.textContent = "Caricamento log...";

@@ -1,27 +1,63 @@
-# mqtt_subscriber.py:
-# legge i log da mqtt e li salva nel file logs/shared_buffer.log (che è condiviso con il web dashboard)
+# app.py:
+# web dashboard per visualizzare i log del sensore e inviare comandi al sensore
 
+from flask import Flask, render_template, jsonify, request
+import threading
 import paho.mqtt.client as mqtt
+import os
 
-BROKER = "localhost"
-PORT = 1883
+app = Flask(__name__)
 
-TOPIC = "firmbox/logs/device01"           # topic MQTT
-BUFFER_FILE = "logs/shared_buffer.log"    # file per salvare i log
+# Variabile globale per i dati ricevuti
+latest_data = []
 
-# scrivo il log nel file logs/shared_buffer.log
+# Funzione callback per MQTT
 def on_message(client, userdata, msg):
-    with open(BUFFER_FILE, "a") as f:
-        f.write(msg.payload.decode() + "\n")
+    global latest_data  # variabile per salvare i dati ricevuti
+   
+    latest_data.append(msg.payload.decode())
+    # Limita la lunghezza della lista
+    if len(latest_data) > 100:
+        latest_data = latest_data[-100:]
 
-def main():
-    client = mqtt.Client()            # creo un client MQTT
-    client.connect(BROKER, PORT, 60)  # connetto il client al broker
+def mqtt_thread():
+    print("MQTT thread avviato")
+    client = mqtt.Client(client_id="flask_dashboard")
+    client.connect("192.168.5.122", 1883, 60)  # IP del Raspberry Pi
+    client.subscribe("firmbox/logs/device01")
+    client.on_message = on_message
+    client.loop_forever()
 
-    client.subscribe(TOPIC)           # iscrivo al topic MQTT
-    client.on_message = on_message    # chiama on_message quando ricevo un messaggio
+# Avvia il thread MQTT solo se il processo è quello principale
+if __name__ == "__main__" and os.environ.get("WERKZEUG_RUN_MAIN") != "true":
+    threading.Thread(target=mqtt_thread, daemon=True).start()
 
-    client.loop_forever()  # il client rimane in ascolto del topic MQTT
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/logs")
+def logs_page():
+    return render_template("logs.html")
+
+# /api/logs: restituisce i dati ricevuti da MQTT
+@app.route("/api/logs")
+def api_logs():
+    return jsonify(latest_data)
+
+# /command: invia un comando al sensore via MQTT
+@app.route("/command", methods=["POST"])
+def command():
+    data = request.get_json()
+    cmd = data.get("command")
+    if not cmd:
+        return {"status": "Nessun comando ricevuto"}, 400
+    try:
+        import paho.mqtt.publish as publish
+        publish.single("firmbox/commands", cmd, hostname="192.168.5.122")
+        return {"status": f"Comando '{cmd}' inviato"}
+    except Exception as e:
+        return {"status": f"Errore invio comando: {e}"}, 500
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=False, port=5000)
