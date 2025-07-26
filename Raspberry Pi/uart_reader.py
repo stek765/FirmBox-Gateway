@@ -9,18 +9,35 @@
 import serial 
 import time
 import hashlib
+import os
 
-PORT = '/dev/ttys014' # porta seriale
-BAUD = 9600 # baud rate = bit trasmessi in un secondo
+os.makedirs("logs", exist_ok=True)
+
+PORT = '/dev/serial0' # porta seriale per ricevere dall'smt32
+BAUD = 115200 # baud rate = bit trasmessi in un secondo
+
+MAX_SIZE = 1024 * 1024 # 1 MB
 
 LOG_FILE = "logs/data.log" # file per i log
 SIG_FILE = "logs/data.sig" # file per le signature (hash SHA256)
+
+# funzione per pulire i log ogni 1MB
+def clear_if_too_large(file_path):
+    """Svuota il file se supera MAX_SIZE."""
+    if os.path.exists(file_path) and os.path.getsize(file_path) > MAX_SIZE:
+        with open(file_path, "w") as f:
+            f.truncate(0) #svuota il file
+        print(f"[!] File > 1MB. Svuotato..")
 
 def log_and_sign(data):
     """
     - Apro LOG_FILE e metto i log
     - Apro SIG_FILE e metto le signature
     """
+
+    # svuoto se supera max size
+    clear_if_too_large(LOG_FILE)
+    clear_if_too_large(SIG_FILE)
     
     with open(LOG_FILE, "a") as log_file:
         timestamp = time.strftime("[%Y-%m-%d %H:%M:%S]") # creo un timestamp per il dato
@@ -54,12 +71,12 @@ def main():
             # leggo i dati in arrivo fino a \n, 
             # decofico da bytes a stringa
             # rimuovo spazi bianchi e '\0'
-            line = ser.readline().decode().strip()
+            line = ser.readline().decode('utf-8', errors='ignore').strip()
 
             # se ho ricevuto qualcosa
             if line: 
                 # lo stampo
-                print("Ricevuto:", line) 
+                print(f"{time.time():.2f} -> {line}")
                 log_and_sign(line) # chiamo la funzione log_and_sign
         
         except KeyboardInterrupt:

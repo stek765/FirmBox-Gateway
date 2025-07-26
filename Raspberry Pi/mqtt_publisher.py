@@ -1,5 +1,6 @@
 # mqtt_publisher.py:
 # Utilizzo di mqtt per pubblicare i log su un broker MQTT (che sarà sul ricevitore)
+
 import paho.mqtt.client as mqtt 
 import time
 

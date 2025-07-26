@@ -7,7 +7,7 @@ import time
 import random
 
 # Configura la porta virtuale dove il ricevitore (uart_reader.py) sta ascoltando
-PORT = '/dev/ttys015'  # cambia in base alla tua configurazione socat
+PORT = '/dev/pts/5'  # cambia in base alla tua configurazione socat
 BAUD = 9600
 
 def generate_fake_data():

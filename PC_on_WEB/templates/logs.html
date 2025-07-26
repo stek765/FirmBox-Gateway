@@ -25,10 +25,10 @@
             margin-bottom: 1.5em;
         }
         .log-panel {
-            width: 700px;
+            width: 820px;
             background: #222;
             border-radius: 12px;
-            box-shadow: 0 2px 16px #000a;
+            box-shadow: 0 -1px 11px #a9cef4eb;
             padding: 1.5em 2em;
             margin-bottom: 2em;
         }
@@ -53,21 +53,19 @@
             background: #252525;
         }
         .timestamp { color: #39f; }
-        .temp { color: #ffb300; }
-        .hum { color: #00e6e6; }
+        .luce { color: #ffb300; }
     </style>
 
     <!-- JavaScript -->
     <script>
         // funzione per parsare le linee del log
         function parseLogLine(line) {
-            // Esempio: [2025-07-15 16:19:16] temperature=22.68C humidity=66.35%
-            const match = line.match(/^\[([^\]]+)\]\s+temperature=([0-9.]+C)\s+humidity=([0-9.]+%)/);
-            if (match) {
+            // Formato luce - più flessibile per gestire caratteri strani
+            const matchLuce = line.match(/^\[([^\]]+)\]\s*[Ll][^:]*:\s*([0-9.]+)/);
+            if (matchLuce) {
                 return {
-                    timestamp: match[1],
-                    temp: match[2],
-                    hum: match[3]
+                    timestamp: matchLuce[1],
+                    luce: matchLuce[2]
                 };
             }
             return null;
@@ -85,8 +83,7 @@
                         if (parsed) {
                             logBody.innerHTML += `<tr>
                                 <td class="timestamp">[${parsed.timestamp}]</td>
-                                <td class="temp">${parsed.temp}</td>
-                                <td class="hum">${parsed.hum}</td>
+                                <td class="luce" colspan="2">Luce: <span style="color:#ffb300">${parsed.luce}</span></td>
                             </tr>`;
                         } else {
                             logBody.innerHTML += `<tr><td colspan="3">${line}</td></tr>`;
@@ -110,8 +107,7 @@
             <thead>
                 <tr>
                     <th>Timestamp</th>
-                    <th>Temperatura</th>
-                    <th>Umidità</th>
+                    <th>Luce</th>
                 </tr>
             </thead>
             <tbody id="log-body">
